@@ -4,6 +4,10 @@ Needs:
 Just Giving API auth key
 Just Giving fundraising page short name
 
+Can be added by creating a .env file in the root directory with these Variables: 
+REACT_APP_JG_ID,
+REACT_APP_FUND_PAGE
+
 Uses:
 React Sweet Progress (https://github.com/abraztsov/react-sweet-progress)
 
