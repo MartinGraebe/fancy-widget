@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState, useEffect} from "react"
 import { Progress } from 'react-sweet-progress'
 import "react-sweet-progress/lib/style.css"
 
@@ -6,62 +6,57 @@ import "react-sweet-progress/lib/style.css"
 
 
 
-class Widget extends React.Component {
+const Widget = () => {
 
-    constructor(){
+            const [totalGoal, setTotalGoal] = useState(0);
+            const [reached, setReached] = useState(0);
+            const [apiKey, setApiKey] = useState(process.env.REACT_APP_JG_ID);
+            const [eventID, setEventID] = useState(process.env.REACT_APP_FUND_PAGE);
+            const [dataObject, setDataObject] = useState('');
+            const [targetAmount, setTargetAmount] = useState(0);
+            const [currency, setCurrency] = useState('');
+            const [raisedAmount, setRaisedAmount] = useState(0);
+            const [percentageRaised, setPercentageRaised] = useState(0);
+            const [strokeColor, setStrokeColor] = useState('blue');
+            const [trailColor, setTrailColor] = useState('white');
 
-        super()
-        this.state = {
 
-            totalGoal: 0,
-            reached: 0,
-            apiKey: process.env.REACT_APP_JG_ID,
-            eventID: process.env.REACT_APP_FUND_PAGE,
-            dataObject: '',
-            targetAmount: '',
-            currency: '',
-            raisedAmount:'',
-            percentageRaised: '',
-            strokeColor: 'blue',
-            test: '20',
+        
+          
             
-        }
-        this.getData = this.getData.bind(this)
-    }
-    componentDidMount(){
-        this.getData()
-       this.intervalId = setInterval(() => this.getData(), 30000);
-    }
-    componentWillUnmount(){
+   
+    useEffect( () =>{
+        getData()
+       const intervalId = setInterval(() => getData(), 30000);
+       return () => clearInterval(intervalId);
+    }, []);
+   
 
-        clearInterval(this.intervalId)
-    }
-
-     getData(){
-        const url =  "https://api.justgiving.com/" + this.state.apiKey + "/v1/fundraising/pages/" + this.state.eventID
+     const getData = () =>{
+        const url =  "https://api.justgiving.com/" + apiKey + "/v1/fundraising/pages/" + eventID
         console.log(url, 'this should be the url')
         
             
     
         fetch(url,{
         headers:{"Content-Type": "application/json"
-            }
+             }
         })
         .then(response => response.json())
         .then (data =>{
-            this.setState({
+            
 
-                dataObject: data,
-                targetAmount: data.fundraisingTarget,
-                currency: data.currencySymbol,
-                raisedAmount: data.totalRaisedOnline,
-                percentageRaised: data.totalRaisedPercentageOfFundraisingTarget,
+                setDataObject(data);
+                setTargetAmount(data.fundraisingTarget);
+                setCurrency(data.currencySymbol);
+                setRaisedAmount(data.totalRaisedOnline); 
+                setPercentageRaised(data.totalRaisedPercentageOfFundraisingTarget); 
                 
-            })
+           
         })
     }
 
-    render(){
+    
 
         return (
          <div className="green-screen">
@@ -71,22 +66,22 @@ class Widget extends React.Component {
                     
                         
                             <div className="labels">
-                                    <label>{this.state.currency}{this.state.raisedAmount}</label>  
+                                    <label>{currency}{raisedAmount}</label>  
                                 </div>
-                            {(this.state.percentageRaised > 100)  ? <Progress percent="100" 
+                            {(percentageRaised > 100)  ? <Progress percent="100" 
                                         theme={
                                             {
                                             
                                             active: {
                                                 
-                                                trailColor: this.state.trailColor,
-                                                color: this.state.strokeColor
+                                                trailColor: trailColor,
+                                                color: strokeColor
                                             }
                                             ,
                                                 success: {
                                                     
-                                                    trailColor: this.state.trailColor,
-                                                    color: this.state.strokeColor
+                                                    trailColor: trailColor,
+                                                    color: strokeColor
                                                   },
                                             }
                                         }
@@ -94,7 +89,7 @@ class Widget extends React.Component {
                             
                             
                             
-                            /> : <Progress percent={this.state.percentageRaised} 
+                            /> : <Progress percent={percentageRaised} 
                             
                             theme={
                                 {
@@ -116,13 +111,13 @@ class Widget extends React.Component {
                                     
                                     />} 
                                 <div className="labels">
-                                    <label>{this.state.currency}{this.state.targetAmount}</label>  
+                                    <label>{currency}{targetAmount}</label>  
                                 </div>
                             
                     </div>
                     <div>
 
-                        <label className="labels">{this.state.percentageRaised}% RAISED SO FAR</label>
+                        <label className="labels">{percentageRaised}% RAISED SO FAR</label>
                     </div>
 
                 
@@ -130,7 +125,7 @@ class Widget extends React.Component {
                 </div>
             </div>   
         )
-    }
+   
 
 }
 
